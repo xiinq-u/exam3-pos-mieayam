@@ -48,11 +48,12 @@
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Foto Produk</label>
                     <div class="aspect-square bg-stone-100 rounded-2xl flex items-center justify-center relative overflow-hidden border-2 border-dashed border-stone-200">
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-full object-cover">
+                            <img id="image-preview" src="{{ asset('storage/' . $product->image) }}" class="w-full h-full object-cover">
                         @else
-                            <span class="text-stone-400 text-xs">No Image</span>
+                            <img id="image-preview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <span id="preview-placeholder" class="text-stone-400 text-xs">No Image</span>
                         @endif
-                        <input type="file" name="image" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <input type="file" name="image" id="image-input" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
                     </div>
                 </div>
 
@@ -70,3 +71,17 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('image-input').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const preview     = document.getElementById('image-preview');
+        const placeholder = document.getElementById('preview-placeholder');
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+    });
+</script>
+@endpush

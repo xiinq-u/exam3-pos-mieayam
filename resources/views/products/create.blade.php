@@ -51,8 +51,9 @@
                 <div>
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Foto Produk</label>
                     <div class="aspect-square bg-stone-100 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden border-2 border-dashed border-stone-200 hover:border-red-400 transition-colors">
-                        <span class="text-stone-400 text-xs text-center p-4">Klik untuk upload foto</span>
-                        <input type="file" name="image" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                        <img id="image-preview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                        <span id="preview-placeholder" class="text-stone-400 text-xs text-center p-4">Klik untuk upload foto</span>
+                        <input type="file" name="image" id="image-input" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
                     </div>
                 </div>
 
@@ -70,3 +71,17 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('image-input').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const preview     = document.getElementById('image-preview');
+        const placeholder = document.getElementById('preview-placeholder');
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+    });
+</script>
+@endpush
