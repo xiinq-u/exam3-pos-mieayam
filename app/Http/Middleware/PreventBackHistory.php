@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 class PreventBackHistory
 {
     /**
-     * Handle an incoming request.
+     * Mencegah browser menyimpan halaman lama setelah logout.
+     * Tujuannya agar tombol back tidak menampilkan dashboard yang sudah ditinggalkan.
      *
      * @param  Closure(Request): (Response)  $next
      */

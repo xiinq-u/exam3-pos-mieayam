@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Membuat tabel produk/menu yang dijual di kasir.
+     */
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
@@ -20,6 +23,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Menghapus tabel produk jika migration dibatalkan.
+     */
     public function down(): void
     {
         Schema::dropIfExists('products');

@@ -7,6 +7,10 @@ use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
+    /**
+     * Membuat akun admin awal untuk login ke sistem.
+     * Jika email sudah ada, data akun akan diperbarui.
+     */
     public function run(): void
     {
         User::updateOrCreate(

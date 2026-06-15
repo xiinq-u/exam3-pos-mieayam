@@ -2,12 +2,63 @@
 
 @section('title', 'Detail Pesanan - '.$order->order_number)
 
+@push('styles')
+    <style>
+        .print-only {
+            display: none;
+        }
+
+        @media print {
+            @page {
+                margin: 8mm;
+                size: 80mm auto;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            .receipt-print-area,
+            .receipt-print-area * {
+                visibility: visible;
+            }
+
+            .receipt-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 72mm;
+                box-shadow: none !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                color: #111827 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
+{{-- Detail pesanan: menampilkan isi pembelian, total, pembayaran, dan kembalian. --}}
 <div class="max-w-3xl mx-auto">
-    <div class="mb-8">
-        <a href="{{ $order->status === 'completed' ? route('reports.sales') : route('orders.pending') }}" class="text-red-600 font-bold hover:text-red-700 text-sm flex items-center gap-1 mb-4">
-            &larr; {{ $order->status === 'completed' ? 'Kembali ke Riwayat' : 'Kembali ke Antrean' }}
-        </a>
+    <div class="mb-8 no-print">
+        <div class="mb-4 flex flex-wrap gap-3">
+            <a href="{{ $order->status === 'completed' ? route('reports.sales') : route('orders.pending') }}" class="text-red-600 font-bold hover:text-red-700 text-sm flex items-center gap-1">
+                &larr; {{ $order->status === 'completed' ? 'Kembali ke Riwayat' : 'Kembali ke Antrean' }}
+            </a>
+            <a href="{{ route('cashier.index') }}" class="text-stone-500 font-bold hover:text-stone-900 text-sm flex items-center gap-1">
+                Kembali ke Kasir
+            </a>
+        </div>
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-stone-900">{{ $order->order_number }}</h1>
@@ -19,12 +70,46 @@
         </div>
     </div>
 
-    @if(session('error'))
-        <div class="alert alert-error mb-6 text-sm">{{ session('error') }}</div>
+    @if(session('print_receipt'))
+        <div id="print-choice" class="no-print mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm font-black text-emerald-800 uppercase tracking-widest">Pembayaran Berhasil</p>
+                    <p class="text-xs text-emerald-700 mt-1">Mau cetak struk sekarang?</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 sm:flex">
+                    <button type="button" onclick="window.print()" class="rounded-xl bg-emerald-600 px-5 py-3 text-xs font-black uppercase tracking-widest text-white hover:bg-emerald-700 transition-all">
+                        Cetak
+                    </button>
+                    <a href="{{ route('cashier.index', ['order_completed' => 1]) }}" class="rounded-xl bg-white px-5 py-3 text-center text-xs font-black uppercase tracking-widest text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-all">
+                        Tidak Dulu
+                    </a>
+                </div>
+            </div>
+        </div>
     @endif
 
-    <div class="relative bg-[#FFFDF9] rounded-[2rem] border border-stone-100 p-6 sm:p-8 shadow-xl">
-        <div class="grid gap-4 sm:grid-cols-3 mb-8">
+    @if(session('success'))
+        <div class="alert alert-success mb-6 text-sm no-print">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-error mb-6 text-sm no-print">{{ session('error') }}</div>
+    @endif
+
+    <div class="receipt-print-area relative bg-[#FFFDF9] rounded-[2rem] border border-stone-100 p-6 sm:p-8 shadow-xl">
+        <div class="print-only text-center mb-5 border-b border-dashed border-stone-300 pb-4">
+            <h2 class="text-lg font-black uppercase tracking-tight">Mie Ayam Puput</h2>
+            <p class="text-[10px] uppercase">Struk Pembayaran</p>
+            <p class="text-[10px]">{{ $order->order_number }}</p>
+            <p class="text-[10px]">{{ $order->created_at->format('d/m/Y H:i') }}</p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 mb-8">
+            <div class="rounded-2xl bg-stone-100 p-4">
+                <p class="text-[10px] font-black uppercase tracking-widest text-stone-400">Pembeli</p>
+                <p class="font-bold text-stone-900 mt-1">{{ $order->customer_name ?? '-' }}</p>
+            </div>
             <div class="rounded-2xl bg-stone-100 p-4">
                 <p class="text-[10px] font-black uppercase tracking-widest text-stone-400">Kasir</p>
                 <p class="font-bold text-stone-900 mt-1">{{ $order->user->name ?? 'Guest' }}</p>
@@ -103,6 +188,10 @@
                     Bayar Sekarang
                 </button>
             </form>
+        @elseif(! session('print_receipt'))
+            <button type="button" onclick="window.print()" class="no-print w-full py-4 bg-stone-900 text-white font-black uppercase text-sm tracking-[0.2em] rounded-2xl hover:bg-red-600 active:scale-[0.98] transition-all">
+                Cetak Struk
+            </button>
         @endif
     </div>
 </div>

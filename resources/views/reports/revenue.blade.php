@@ -3,6 +3,7 @@
 @section('title', 'Daily Revenue')
 
 @section('content')
+{{-- Laporan pendapatan: menampilkan jumlah pesanan dan total uang per hari. --}}
 <div class="max-w-2xl mx-auto space-y-6">
     <div class="flex items-center justify-between pb-4 border-b-2 border-stone-200 border-dashed">
         <div>

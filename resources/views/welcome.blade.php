@@ -3,6 +3,7 @@
 @section('title', 'Welcome')
 
 @section('content')
+    {{-- Halaman awal website sebelum user masuk ke sistem. --}}
     <div class="bg-white dark:bg-[#161615] rounded-3xl shadow-xl overflow-hidden">
         <div class="grid lg:grid-cols-[1.35fr_1fr] gap-6 p-6 lg:p-10">
             <div class="space-y-6">

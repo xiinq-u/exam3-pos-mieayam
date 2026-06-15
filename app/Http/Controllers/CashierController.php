@@ -5,15 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
 
 class CashierController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Mengambil isi keranjang dari session dan menghitung totalnya.
+     *
+     * @return array{items: Collection, total: int|float}
+     */
+    private function cartData(): array
     {
-        $products = Product::where('is_available', true)->with('category')->orderBy('name')->get();
         $cart = Session::get('cart', []);
         $items = collect($cart)->map(function ($item, $productId) {
             $product = Product::find($productId);
@@ -24,15 +30,59 @@ class CashierController extends Controller
             ]) : null;
         })->filter();
 
-        $total = $items->sum('subtotal');
-
-        return view('cashier.index', [
-            'products' => $products,
+        return [
             'items' => $items,
-            'total' => $total,
+            'total' => $items->sum('subtotal'),
+        ];
+    }
+
+    /**
+     * Mengirim ulang tampilan tagihan setelah keranjang berubah.
+     */
+    private function cartResponse()
+    {
+        $cartData = $this->cartData();
+
+        return response()->json([
+            'html' => view('cashier.partials.cart', $cartData)->render(),
+            'cart_count' => $cartData['items']->sum('quantity'),
         ]);
     }
 
+    /**
+     * Mengirim error checkout dalam format yang cocok untuk request biasa dan AJAX.
+     */
+    private function checkoutError(Request $request, string $message): RedirectResponse|JsonResponse
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+            ], 422);
+        }
+
+        return redirect()->route('cashier.index')->with('error', $message);
+    }
+
+    /**
+     * Menampilkan halaman kasir.
+     * Di sini aplikasi mengambil daftar menu yang tersedia dan isi keranjang sementara.
+     */
+    public function index(Request $request)
+    {
+        $products = Product::where('is_available', true)->with('category')->orderBy('name')->get();
+        $cartData = $this->cartData();
+
+        return view('cashier.index', [
+            'products' => $products,
+            'items' => $cartData['items'],
+            'total' => $cartData['total'],
+        ]);
+    }
+
+    /**
+     * Menambahkan menu ke keranjang.
+     * Keranjang disimpan sementara di session, jadi belum masuk riwayat pembelian.
+     */
     public function addToCart(Request $request)
     {
         $data = $request->validate([
@@ -51,9 +101,16 @@ class CashierController extends Controller
 
         Session::put('cart', $cart);
 
+        if ($request->expectsJson()) {
+            return $this->cartResponse();
+        }
+
         return redirect()->route('cashier.index')->with('success', 'Menu added to cart.');
     }
 
+    /**
+     * Menghapus satu menu dari keranjang kasir.
+     */
     public function removeFromCart(Request $request, Product $product)
     {
         $cart = Session::get('cart', []);
@@ -64,9 +121,16 @@ class CashierController extends Controller
             Session::put('cart', $cart);
         }
 
+        if ($request->expectsJson()) {
+            return $this->cartResponse();
+        }
+
         return redirect()->route('cashier.index')->with('success', 'Item removed from cart.');
     }
 
+    /**
+     * Mengosongkan semua isi keranjang.
+     */
     public function clearCart(): RedirectResponse
     {
         Session::forget('cart');
@@ -74,15 +138,20 @@ class CashierController extends Controller
         return redirect()->route('cashier.index')->with('success', 'Cart cleared.');
     }
 
+    /**
+     * Membuat pesanan dari isi keranjang.
+     * Setelah pesanan dibuat, statusnya masih pending sampai kasir menyelesaikan pembayaran.
+     */
     public function checkout(Request $request)
     {
         $data = $request->validate([
+            'customer_name' => 'required|string|max:100',
             'order_type' => 'required|in:dine_in,take_away',
         ]);
 
         $cart = Session::get('cart', []);
         if (empty($cart)) {
-            return redirect()->route('cashier.index')->with('error', 'Cart is empty.');
+            return $this->checkoutError($request, 'Cart is empty.');
         }
 
         $items = collect($cart)->map(function ($item, $productId) {
@@ -101,13 +170,14 @@ class CashierController extends Controller
         })->filter();
 
         if ($items->isEmpty()) {
-            return redirect()->route('cashier.index')->with('error', 'Cart contains invalid items.');
+            return $this->checkoutError($request, 'Cart contains invalid items.');
         }
 
         $total = $items->sum('subtotal');
 
         $order = Order::create([
             'order_number' => 'ORD-'.now()->format('YmdHis').'-'.rand(100, 999),
+            'customer_name' => $data['customer_name'],
             'user_id' => $request->user()->id,
             'total' => $total,
             'paid_amount' => 0,
@@ -123,16 +193,29 @@ class CashierController extends Controller
 
         Session::forget('cart');
 
-        return redirect()->route('cashier.index')->with('success', 'Pesanan berhasil dibuat. Pesanan akan segera diproses.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Pesanan berhasil dibuat.',
+                'redirect_url' => route('orders.show', $order),
+            ]);
+        }
+
+        return redirect()->route('orders.show', $order)->with('success', 'Pesanan berhasil dibuat. Pesanan akan segera diproses.');
     }
 
+    /**
+     * Menampilkan daftar pesanan yang belum dibayar atau belum selesai.
+     */
     public function pendingOrders()
     {
-        $orders = Order::where('status', 'pending')->latest()->paginate(15);
+        $orders = Order::with('items')->where('status', 'pending')->latest()->paginate(15);
 
         return view('orders.pending', compact('orders'));
     }
 
+    /**
+     * Menampilkan detail satu pesanan, termasuk daftar menu yang dibeli.
+     */
     public function showOrder(Order $order)
     {
         $order->load('items', 'user');
@@ -140,6 +223,10 @@ class CashierController extends Controller
         return view('orders.show', compact('order'));
     }
 
+    /**
+     * Menyelesaikan pembayaran.
+     * Aplikasi menghitung uang dibayar dan kembalian, lalu mengubah status menjadi completed.
+     */
     public function completeOrder(Request $request, Order $order)
     {
         $data = $request->validate([
@@ -158,6 +245,9 @@ class CashierController extends Controller
             'status' => 'completed',
         ]);
 
-        return redirect()->route('orders.pending')->with('success', 'Pesanan selesai dan pembayaran diterima.');
+        return redirect()
+            ->route('orders.show', $order)
+            ->with('success', 'Pesanan selesai dan pembayaran diterima.')
+            ->with('print_receipt', true);
     }
 }

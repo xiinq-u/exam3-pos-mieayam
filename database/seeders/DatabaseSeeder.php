@@ -11,11 +11,12 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Menjalankan semua seeder utama.
+     * Anggap ini seperti tombol untuk mengisi data awal aplikasi sekaligus.
      */
     public function run(): void
     {
-        // seed categories, products and admin user
+        // Urutannya penting: kategori dibuat dulu, baru produk dan user admin.
         $this->call([
             CategorySeeder::class,
             ProductSeeder::class,

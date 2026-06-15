@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Menambah informasi tambahan di pesanan.
+     * order_type untuk dine in/take away, status untuk pending/completed.
+     */
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
@@ -15,6 +19,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Menghapus kolom tambahan jika migration dibatalkan.
+     */
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {

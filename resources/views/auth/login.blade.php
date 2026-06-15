@@ -3,6 +3,7 @@
 @section('title', 'Login - Mie Ayam Puput')
 
 @section('content')
+{{-- Halaman login: tempat user memasukkan email dan password untuk masuk ke sistem. --}}
 <div class="absolute inset-0 opacity-40 pointer-events-none bg-[radial-gradient(#e4d5b7_1.5px,transparent_1.5px)] [background-size:32px_32px]"></div>
 <div class="absolute top-10 left-10 w-72 h-72 bg-amber-100/30 rounded-full blur-2xl pointer-events-none"></div>
 <div class="absolute bottom-10 right-10 w-96 h-96 bg-red-100/20 rounded-full blur-3xl pointer-events-none"></div>

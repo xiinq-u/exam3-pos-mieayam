@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Auth;
 class AdminMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Penjaga halaman admin.
+     * Jika belum login, user diarahkan ke login.
+     * Jika sudah login tapi bukan admin, akses ditolak.
      */
     public function handle(Request $request, Closure $next)
     {

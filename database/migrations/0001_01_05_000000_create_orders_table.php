@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Membuat tabel pesanan utama.
+     * Tabel ini menyimpan total belanja, uang dibayar, kembalian, dan metode bayar.
+     */
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -20,6 +24,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Menghapus tabel pesanan jika migration dibatalkan.
+     */
     public function down(): void
     {
         Schema::dropIfExists('orders');

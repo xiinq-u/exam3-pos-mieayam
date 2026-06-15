@@ -1,3 +1,4 @@
+{{-- Footer bawah: informasi kecil aplikasi yang tampil di bagian paling bawah halaman. --}}
 <footer class="w-full max-w-6xl mx-auto px-6 mb-8 relative z-10 select-none">
     <div class="w-full bg-[#FFFDF9] border-2 border-dashed border-stone-300/80 rounded-2xl p-5 text-center shadow-lg relative overflow-hidden">
         

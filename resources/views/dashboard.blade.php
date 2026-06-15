@@ -3,6 +3,7 @@
 @section('title', 'Dashboard - Mie Ayam Puput')
 
 @section('content')
+{{-- Dashboard admin: ringkasan penjualan, transaksi, antrean, dan grafik pendapatan. --}}
 <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#e4d5b7_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
 
 <div class="space-y-8 relative z-10 select-none px-2 py-4">

@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Membuat tabel detail pesanan.
+     * Satu pesanan bisa memiliki banyak item, misalnya mie ayam, es teh, dan topping.
+     */
     public function up(): void
     {
         Schema::create('order_items', function (Blueprint $table) {
@@ -20,6 +24,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Menghapus tabel detail pesanan jika migration dibatalkan.
+     */
     public function down(): void
     {
         Schema::dropIfExists('order_items');

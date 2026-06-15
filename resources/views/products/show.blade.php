@@ -3,6 +3,7 @@
 @section('title', $product->name)
 
 @section('content')
+    {{-- Detail menu: menampilkan data satu produk secara lengkap. --}}
     <div class="card bg-base-100 shadow-sm border border-base-300">
         <div class="card-body">
             <h2 class="card-title">{{ $product->name }}</h2>

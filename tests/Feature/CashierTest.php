@@ -39,13 +39,15 @@ test('cashier can checkout and create pending order', function () {
 
     // Checkout
     $response = $this->post(route('cashier.checkout'), [
+        'customer_name' => 'Budi',
         'order_type' => 'dine_in',
     ]);
 
-    $response->assertRedirect(route('orders.pending'));
-
     // Verify order created with pending status
     $order = Order::latest()->first();
+    $response->assertRedirect(route('orders.show', $order));
+
+    $this->assertEquals('Budi', $order->customer_name);
     $this->assertEquals('pending', $order->status);
     $this->assertEquals(50000, $order->total);
     $this->assertNull($order->paid_amount);

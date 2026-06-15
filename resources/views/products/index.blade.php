@@ -3,22 +3,23 @@
 @section('title', 'Daftar Menu - Mie Ayam Puput')
 
 @section('content')
-<div class="max-w-7xl mx-auto space-y-10">
+{{-- Daftar menu: admin bisa melihat, mengedit, atau menghapus produk. --}}
+<div class="max-w-6xl mx-auto space-y-10 px-1">
     
-    <div class="flex justify-between items-end">
+    <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
         <div>
             <h2 class="text-[10px] font-black text-red-600 tracking-[0.3em] uppercase">Mie Ayam Puput</h2>
-            <h1 class="text-5xl font-black text-stone-900 tracking-tighter mt-1">Daftar Menu</h1>
+            <h1 class="text-4xl sm:text-5xl font-black text-stone-900 tracking-tighter mt-1">Daftar Menu</h1>
         </div>
-        <a href="{{ route('products.create') }}" class="bg-stone-900 hover:bg-red-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-xl shadow-stone-200">
+        <a href="{{ route('products.create') }}" class="w-full sm:w-auto text-center bg-stone-900 hover:bg-red-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-xl shadow-stone-200">
             + Tambah Menu
         </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 items-start">
         @foreach($products as $p)
-        <div class="bg-white border border-stone-100 p-3 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-stone-100 transition-all duration-500 group">
-            <div class="relative w-full aspect-square bg-[#FFFDF9] rounded-[1.5rem] overflow-hidden mb-4 border border-stone-100">
+        <div class="bg-white border border-stone-100 p-3 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-stone-100 transition-all duration-500 group min-w-0">
+            <div class="relative w-full aspect-[4/3] sm:aspect-square bg-[#FFFDF9] rounded-[1.5rem] overflow-hidden mb-4 border border-stone-100">
                 @if($p->image)
                     <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 @else
@@ -34,11 +35,11 @@
 
             <div class="px-2 pb-2">
                 <p class="text-[9px] font-black text-stone-400 uppercase tracking-[0.2em] mb-1">{{ $p->category->name ?? 'Menu' }}</p>
-                <h3 class="text-md font-black text-stone-900 mb-4">{{ $p->name }}</h3>
+                <h3 class="text-md font-black text-stone-900 mb-4 truncate">{{ $p->name }}</h3>
                 
-                <div class="flex justify-between items-center bg-[#FFFDF9] p-3 rounded-xl border border-stone-100">
-                    <span class="font-black text-stone-900 text-sm">Rp{{ number_format($p->price, 0, ',', '.') }}</span>
-                    <div class="flex gap-1">
+                <div class="flex justify-between items-center gap-3 bg-[#FFFDF9] p-3 rounded-xl border border-stone-100">
+                    <span class="font-black text-stone-900 text-sm truncate">Rp{{ number_format($p->price, 0, ',', '.') }}</span>
+                    <div class="flex gap-1 shrink-0">
                         <a href="{{ route('products.edit', $p) }}" class="p-2 text-stone-400 hover:text-stone-900 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </a>

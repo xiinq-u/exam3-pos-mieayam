@@ -12,6 +12,7 @@
         @stack('styles')
     </head>
     <body class="min-h-screen bg-base-200 text-base-content font-sans">
+        {{-- Layout utama: membungkus halaman dengan header, sidebar mobile, konten, dan footer. --}}
         <div class="drawer">
             <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 

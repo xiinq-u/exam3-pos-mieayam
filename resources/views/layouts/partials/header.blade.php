@@ -1,4 +1,5 @@
-<header class="navbar bg-[#FFFDF9] border-b-2 border-dashed border-amber-200 px-4 lg:px-8 select-none relative z-50">
+{{-- Header atas: berisi tombol hamburger, nama aplikasi, user aktif, dan shortcut dashboard. --}}
+<header id="main-navbar" class="navbar sticky top-0 z-50 bg-[#FFFDF9] border-b-2 border-dashed border-amber-200 px-4 py-3 lg:px-8 select-none transition-all duration-300 ease-out">
     
     <div class="flex-none lg:hidden mr-1">
         <label for="main-drawer" class="btn btn-square btn-ghost btn-sm text-stone-700">
@@ -90,3 +91,28 @@
         @endif
     </div>
 </header>
+
+@once
+    @push('scripts')
+        <script>
+            const navbar = document.getElementById('main-navbar');
+
+            function updateNavbar() {
+                if (!navbar) {
+                    return;
+                }
+
+                const isScrolled = window.scrollY > 12;
+                navbar.classList.toggle('bg-[#FFFDF9]/95', isScrolled);
+                navbar.classList.toggle('backdrop-blur-md', isScrolled);
+                navbar.classList.toggle('shadow-lg', isScrolled);
+                navbar.classList.toggle('shadow-stone-900/5', isScrolled);
+                navbar.classList.toggle('py-2', isScrolled);
+                navbar.classList.toggle('py-3', !isScrolled);
+            }
+
+            window.addEventListener('scroll', updateNavbar, { passive: true });
+            updateNavbar();
+        </script>
+    @endpush
+@endonce

@@ -3,6 +3,7 @@
 @section('title', 'Sales History')
 
 @section('content')
+{{-- Riwayat pembelian: berisi pesanan yang sudah selesai dibayar. --}}
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <div>
@@ -18,6 +19,7 @@
                 <tr class="bg-stone-50 border-b border-stone-100 text-[10px] font-black text-stone-400 uppercase tracking-widest">
                     <th class="p-5">Waktu</th>
                     <th class="p-5">Order ID</th>
+                    <th class="p-5">Pembeli</th>
                     <th class="p-5">Kasir</th>
                     <th class="p-5">Metode</th>
                     <th class="p-5 text-right">Total</th>
@@ -34,6 +36,7 @@
                             {{ $order->order_number }}
                         </a>
                     </td>
+                    <td class="p-5">{{ $order->customer_name ?? '-' }}</td>
                     <td class="p-5">{{ $order->user->name ?? 'Guest' }}</td>
                     <td class="p-5">
                         <span class="px-2 py-1 bg-stone-100 rounded text-[10px] font-bold uppercase whitespace-nowrap">{{ $order->payment_method }}</span>
@@ -54,7 +57,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center text-stone-400 py-12 text-sm font-bold">Belum ada transaksi tercatat.</td>
+                    <td colspan="8" class="text-center text-stone-400 py-12 text-sm font-bold">Belum ada transaksi tercatat.</td>
                 </tr>
                 @endforelse
             </tbody>

@@ -8,6 +8,10 @@ use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
+    /**
+     * Mengisi contoh produk/menu awal.
+     * Produk dimasukkan ke kategori yang sesuai.
+     */
     public function run(): void
     {
         $mie = Category::where('name', 'Mie Ayam')->first();

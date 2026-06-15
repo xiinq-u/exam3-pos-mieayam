@@ -1,5 +1,6 @@
 @if (!request()->routeIs('login'))
-    <div class="w-full bg-[#FFFDF9] border border-stone-200/80 shadow-xl pt-6 pb-8 px-4 relative select-none font-mono text-xs text-stone-700 mx-auto origin-top animate-print-ticket">
+    {{-- Sidebar menu: daftar jalan pintas untuk pindah halaman di aplikasi. --}}
+    <div class="w-full bg-[#FFFDF9] border border-stone-200/80 shadow-xl pt-6 pb-8 px-4 relative select-none font-mono text-xs text-stone-700 mx-auto transition-shadow duration-300 ease-out">
         
         <div class="flex items-center justify-between mb-4 lg:hidden">
             <span class="text-xs font-bold uppercase tracking-wider text-stone-800">Menu</span>
@@ -55,7 +56,7 @@
                 <li>
                     <a href="{{ route('orders.pending') }}" class="block w-full group">
                         <div class="flex justify-between items-center w-full rounded-md border-l-4 px-3 py-3 transition duration-150 {{ request()->routeIs('orders.*') ? 'bg-stone-100 border-red-500 text-stone-900 font-bold' : 'bg-transparent border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-800' }}">
-                            <span>03. RIWAYAT PESANAN</span>
+                            <span>03. PESANAN</span>
                             @if(request()->routeIs('orders.*'))
                                 <span class="text-[10px] text-red-600 font-black">[*AKTIF*]</span>
                             @else

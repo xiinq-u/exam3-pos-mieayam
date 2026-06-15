@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Membuat tabel kategori menu, misalnya Mie Ayam, Minuman, dan Topping.
+     */
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
@@ -15,6 +18,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Menghapus tabel kategori jika migration dibatalkan.
+     */
     public function down(): void
     {
         Schema::dropIfExists('categories');

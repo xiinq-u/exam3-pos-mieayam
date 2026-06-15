@@ -8,6 +8,9 @@ use Illuminate\Support\Carbon;
 
 class ReportController extends Controller
 {
+    /**
+     * Menampilkan riwayat pembelian yang sudah selesai dibayar.
+     */
     public function sales()
     {
         $orders = Order::with('items', 'user')
@@ -18,6 +21,9 @@ class ReportController extends Controller
         return view('reports.sales', compact('orders'));
     }
 
+    /**
+     * Menampilkan laporan pendapatan harian untuk 7 hari terakhir.
+     */
     public function revenue(Request $request)
     {
         $start = Carbon::today()->subDays(6);

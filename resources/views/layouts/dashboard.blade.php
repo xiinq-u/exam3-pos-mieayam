@@ -15,8 +15,10 @@
     <body class="min-h-screen bg-base-200 text-base-content font-sans">
         
         @if (request()->routeIs('login'))
+            {{-- Halaman login tidak memakai sidebar agar fokus ke form masuk. --}}
             <main>@yield('content')</main>
         @else
+            {{-- Halaman setelah login memakai header dan sidebar. --}}
             <div class="drawer lg:drawer-open">
                 <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
@@ -37,7 +39,7 @@
 
                 <div class="drawer-side lg:hidden z-[999]">
                     <label for="main-drawer" class="drawer-overlay"></label>
-                    <div class="w-72 bg-base-100 min-h-full">
+                    <div class="w-72 bg-base-100">
                         @include('layouts.partials.sidebar')
                     </div>
                 </div>

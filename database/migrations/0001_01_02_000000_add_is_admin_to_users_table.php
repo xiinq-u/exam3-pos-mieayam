@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Menambah tanda admin di tabel user.
+     * Nilai ini dipakai untuk membedakan admin dan kasir biasa.
      */
     public function up(): void
     {
@@ -17,7 +18,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Membatalkan perubahan dengan menghapus kolom is_admin.
      */
     public function down(): void
     {
