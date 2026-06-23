@@ -4,44 +4,187 @@
 
 @push('styles')
     <style>
-        .print-only {
-            display: none;
-        }
-
         @media print {
             @page {
-                margin: 8mm;
-                size: 80mm auto;
+                margin: 0;
+                size: 58mm auto;
             }
 
-            body * {
-                visibility: hidden;
-            }
-
-            .receipt-print-area,
-            .receipt-print-area * {
-                visibility: visible;
-            }
-
-            .receipt-print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 72mm;
-                box-shadow: none !important;
-                border: 0 !important;
-                border-radius: 0 !important;
+            html,
+            body {
+                width: 58mm !important;
+                min-width: 58mm !important;
+                max-width: 58mm !important;
+                min-height: 0 !important;
+                height: auto !important;
+                margin: 0 !important;
                 padding: 0 !important;
+                overflow: visible !important;
                 background: white !important;
-                color: #111827 !important;
+                color: #000 !important;
+                font-family: "Courier New", Courier, monospace !important;
+                font-size: 11px !important;
+                line-height: 1.45 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
+            header,
+            footer,
+            nav,
+            aside,
+            .btn,
+            .navbar,
+            .drawer-side,
+            .drawer-content > :not(main),
+            main > div > aside,
             .no-print {
                 display: none !important;
             }
 
-            .print-only {
-                display: block;
+            .drawer,
+            .drawer-content,
+            main,
+            main > div,
+            main > div > section,
+                .max-w-3xl,
+                .mx-auto {
+                display: block !important;
+                width: 58mm !important;
+                max-width: 58mm !important;
+                min-height: 0 !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                background: white !important;
+            }
+
+            main > div {
+                grid-template-columns: 1fr !important;
+                gap: 0 !important;
+            }
+
+            .receipt-print-area {
+                display: block !important;
+                width: 44mm !important;
+                max-width: 44mm !important;
+                margin: 0 !important;
+                padding: 3mm 1.5mm 5mm !important;
+                background: white !important;
+                color: #000 !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                page-break-after: avoid !important;
+                break-after: avoid-page !important;
+            }
+
+            .receipt-print-area * {
+                color: #000 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .receipt-title {
+                font-size: 15px !important;
+                line-height: 1.35 !important;
+                font-weight: 800 !important;
+                text-align: center !important;
+                letter-spacing: 0 !important;
+            }
+
+            .receipt-subtitle {
+                font-size: 9.5px !important;
+                line-height: 1.45 !important;
+                text-align: center !important;
+            }
+
+            .row {
+                display: grid !important;
+                grid-template-columns: 15mm minmax(0, 1fr) !important;
+                column-gap: 1.5mm !important;
+                width: 100% !important;
+                margin: 4px 0 !important;
+                font-size: 10px !important;
+                line-height: 1.45 !important;
+            }
+
+            .row > span {
+                display: inline-block !important;
+                max-width: none !important;
+                overflow-wrap: anywhere !important;
+            }
+
+            .row > span:first-child {
+                font-weight: 700 !important;
+            }
+
+            .row > span:last-child {
+                text-align: left !important;
+                font-weight: 800 !important;
+                max-width: none !important;
+            }
+
+            .item-name {
+                max-width: 44mm !important;
+                overflow-wrap: anywhere !important;
+                font-size: 12.5px !important;
+                font-weight: 800 !important;
+                line-height: 1.35 !important;
+                margin-bottom: 2px !important;
+            }
+
+            .item-row {
+                display: block !important;
+                font-size: 11.5px !important;
+                margin: 8px 0 !important;
+            }
+
+            .item-row > div,
+            .item-row > span {
+                display: block !important;
+                max-width: 44mm !important;
+                text-align: left !important;
+            }
+
+            .item-row > span {
+                font-size: 12px !important;
+                margin-top: 3px !important;
+                font-weight: 900 !important;
+            }
+
+            .row p {
+                margin: 0 !important;
+                line-height: 1.35 !important;
+                font-weight: 700 !important;
+            }
+
+            hr,
+            .receipt-divider {
+                display: block !important;
+                height: 1px !important;
+                border: 0 !important;
+                border-top: 1px dashed #000 !important;
+                margin: 9px 0 !important;
+                visibility: visible !important;
+            }
+
+            .total-row {
+                display: grid !important;
+                grid-template-columns: 14mm minmax(0, 1fr) !important;
+                font-size: 11px !important;
+                font-weight: 900 !important;
+                border-top: 1px solid #000 !important;
+                padding-top: 7px !important;
+                margin-top: 7px !important;
+            }
+
+            .total-row > span:last-child {
+                text-align: left !important;
             }
         }
     </style>
@@ -97,43 +240,54 @@
         <div class="alert alert-error mb-6 text-sm no-print">{{ session('error') }}</div>
     @endif
 
-    <div class="receipt-print-area relative bg-[#FFFDF9] rounded-[2rem] border border-stone-100 p-6 sm:p-8 shadow-xl">
-        <div class="print-only text-center mb-5 border-b border-dashed border-stone-300 pb-4">
-            <h2 class="text-lg font-black uppercase tracking-tight">Mie Ayam Puput</h2>
-            <p class="text-[10px] uppercase">Struk Pembayaran</p>
-            <p class="text-[10px]">{{ $order->order_number }}</p>
-            <p class="text-[10px]">{{ $order->created_at->format('d/m/Y H:i') }}</p>
+    <div class="receipt-print-area relative overflow-hidden bg-white rounded-xl border border-stone-200 p-5 shadow-xl">
+        <div class="text-center">
+            <h2 class="receipt-title text-xl font-black uppercase tracking-tight text-stone-950">Mie Ayam Puput</h2>
+            <p class="receipt-subtitle mt-1 text-[10px] font-bold uppercase tracking-widest text-stone-500">Struk Pembayaran</p>
+            <p class="receipt-subtitle mt-2 text-[10px] text-stone-500">Jl. Hj Manshur Rawa Mulya</p>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 mb-8">
-            <div class="rounded-2xl bg-stone-100 p-4">
-                <p class="text-[10px] font-black uppercase tracking-widest text-stone-400">Pembeli</p>
-                <p class="font-bold text-stone-900 mt-1">{{ $order->customer_name ?? '-' }}</p>
+        <hr class="receipt-divider">
+
+        <div class="space-y-1.5 text-xs">
+            <div class="row flex justify-between gap-4">
+                <span class="text-stone-500">No. Order:</span>
+                <span class="font-bold text-right text-stone-900">{{ $order->order_number }}</span>
             </div>
-            <div class="rounded-2xl bg-stone-100 p-4">
-                <p class="text-[10px] font-black uppercase tracking-widest text-stone-400">Kasir</p>
-                <p class="font-bold text-stone-900 mt-1">{{ $order->user->name ?? 'Guest' }}</p>
+            <div class="row flex justify-between gap-4">
+                <span class="text-stone-500">Waktu:</span>
+                <span class="font-bold text-right text-stone-900">{{ $order->created_at->format('d/m/Y H:i') }}</span>
             </div>
-            <div class="rounded-2xl bg-stone-100 p-4">
-                <p class="text-[10px] font-black uppercase tracking-widest text-stone-400">Tipe Pesanan</p>
-                <p class="font-bold text-stone-900 mt-1">{{ ucfirst(str_replace('_', ' ', $order->order_type)) }}</p>
+            <div class="row flex justify-between gap-4">
+                <span class="text-stone-500">Pembeli:</span>
+                <span class="font-bold text-right text-stone-900">{{ $order->customer_name ?? '-' }}</span>
             </div>
-            <div class="rounded-2xl bg-stone-100 p-4">
-                <p class="text-[10px] font-black uppercase tracking-widest text-stone-400">Metode</p>
-                <p class="font-bold text-stone-900 mt-1">{{ strtoupper($order->payment_method) }}</p>
+            <div class="row flex justify-between gap-4">
+                <span class="text-stone-500">Kasir:</span>
+                <span class="font-bold text-right text-stone-900">{{ $order->user->name ?? 'Guest' }}</span>
+            </div>
+            <div class="row flex justify-between gap-4">
+                <span class="text-stone-500">Tipe:</span>
+                <span class="font-bold text-right uppercase text-stone-900">{{ str_replace('_', ' ', $order->order_type) }}</span>
+            </div>
+            <div class="row flex justify-between gap-4">
+                <span class="text-stone-500">Metode:</span>
+                <span class="font-bold text-right uppercase text-stone-900">{{ $order->payment_method }}</span>
             </div>
         </div>
 
-        <div class="bg-stone-900/5 rounded-2xl p-5 sm:p-6 mb-8 space-y-4">
-            <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-stone-400">
-                <span>Item Dibeli</span>
+        <hr class="receipt-divider">
+
+        <div class="space-y-3">
+            <div class="row flex justify-between text-[10px] font-black uppercase tracking-widest text-stone-500">
+                <span>Menu</span>
                 <span>Subtotal</span>
             </div>
 
             @foreach($order->items as $item)
-                <div class="flex justify-between gap-4 text-sm">
-                    <div>
-                        <p class="font-bold text-stone-900">{{ $item->product_name }}</p>
+                <div class="row item-row flex justify-between gap-4 text-xs">
+                    <div class="min-w-0">
+                        <p class="item-name font-bold text-stone-900">{{ $item->product_name }}</p>
                         <p class="text-xs text-stone-500">
                             {{ $item->quantity }} x Rp{{ number_format($item->price, 0, ',', '.') }}
                         </p>
@@ -141,28 +295,30 @@
                     <span class="shrink-0 font-black text-stone-900">Rp{{ number_format($item->subtotal, 0, ',', '.') }}</span>
                 </div>
             @endforeach
+        </div>
 
-            <div class="border-t-2 border-stone-900/10 pt-4 space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="font-black uppercase text-stone-400 text-xs">Total</span>
-                    <span class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tighter">Rp{{ number_format($order->total, 0, ',', '.') }}</span>
-                </div>
+        <hr class="receipt-divider">
 
-                @if($order->status === 'completed')
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="font-bold text-stone-500">Uang Dibayar</span>
-                        <span class="font-black text-stone-900">Rp{{ number_format($order->paid_amount, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="font-bold text-stone-500">Kembalian</span>
-                        <span class="font-black text-emerald-700">Rp{{ number_format($order->change_amount, 0, ',', '.') }}</span>
-                    </div>
-                @endif
+        <div class="space-y-2">
+            <div class="row total-row flex justify-between items-center">
+                <span class="font-black uppercase text-stone-500 text-xs">Total:</span>
+                <span class="text-xl font-black text-stone-950">Rp{{ number_format($order->total, 0, ',', '.') }}</span>
             </div>
+
+            @if($order->status === 'completed')
+                <div class="row flex justify-between items-center text-xs">
+                    <span class="font-bold text-stone-500">Bayar:</span>
+                    <span class="font-black text-stone-900">Rp{{ number_format($order->paid_amount, 0, ',', '.') }}</span>
+                </div>
+                <div class="row flex justify-between items-center text-xs">
+                    <span class="font-bold text-stone-500">Kembali:</span>
+                    <span class="font-black text-stone-900">Rp{{ number_format($order->change_amount, 0, ',', '.') }}</span>
+                </div>
+            @endif
         </div>
 
         @if($order->status === 'pending')
-            <form action="{{ route('orders.complete', $order) }}" method="POST" class="space-y-6">
+            <form action="{{ route('orders.complete', $order) }}" method="POST" class="no-print space-y-6 border-t border-stone-200 p-5">
                 @csrf
                 <div class="flex bg-stone-200 p-1 rounded-2xl">
                     <input type="radio" name="payment_method" value="cash" id="cash" class="peer/cash sr-only" checked>

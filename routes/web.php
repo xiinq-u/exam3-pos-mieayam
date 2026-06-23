@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman pertama yang muncul saat website dibuka.
 Route::get('/', function () {
-    return view('product');
+    return redirect()->route('dashboard');
 });
 
 // Bagian login dan logout.

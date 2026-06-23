@@ -21,6 +21,7 @@ class DashboardController extends Controller
         $todayDate = $today->toDateString();
         $chartStart = $today->copy()->subDays(6);
         $chartStartDate = $chartStart->toDateString();
+        // dd($chartStart);
 
         // Angka ringkasan untuk kartu dashboard.
         $totalSales = (clone $completedOrders)->sum('total');
@@ -41,9 +42,11 @@ class DashboardController extends Controller
             ->groupBy('day')
             ->orderBy('day', 'asc')
             ->pluck('revenue', 'day');
+            // dd($dailyRevenue);
 
         $chartLabels = collect(range(0, 6))
             ->map(fn (int $day): string => $chartStart->copy()->addDays($day)->format('d M'));
+            // dd($chartLabels);
 
         // Jika ada hari yang belum punya transaksi, nilainya dibuat 0 agar grafik tetap rapi.
         $chartData = collect(range(0, 6))
@@ -52,6 +55,7 @@ class DashboardController extends Controller
 
                 return (float) ($dailyRevenue[$date] ?? 0);
             });
+            // dd($chartData);
 
         return view('dashboard', [
             'totalSales' => $totalSales,

@@ -15,7 +15,7 @@
         </div>
         <div class="grid grid-cols-2 gap-2 sm:flex">
             <a href="{{ route('products.index') }}" class="px-5 py-2.5 bg-white border border-stone-200 rounded-xl text-stone-600 font-bold text-center hover:border-stone-400 transition-all">Kelola Menu</a>
-            <a href="{{ route('orders.pending') }}" class="px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-center shadow-lg shadow-red-200 hover:bg-red-700 transition-all">Riwayat</a>
+            <a href="{{ route('orders.pending') }}" class="px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-center shadow-lg shadow-red-200 hover:bg-red-700 transition-all">Pesanan</a>
         </div>
     </div>
 
