@@ -7,5 +7,10 @@
 *.php diff=php
 
 /.github export-ignore
+.env export-ignore
+.env.* export-ignore
+node_modules export-ignore
+vendor export-ignore
+public/build export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore

@@ -13,13 +13,12 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'puput12@gmail.com'],
-            [
-                'name' => 'puput12',
-                'password' => 'cahya13',
-                'is_admin' => true,
-            ]
-        );
+        foreach ([
+            ['name' => 'Puput Owner', 'email' => 'puput12@gmail.com', 'password' => 'cahya13', 'role' => 'owner', 'is_admin' => true],
+            ['name' => 'Kasir Demo', 'email' => 'kasir@gmail.test', 'password' => 'cahya14', 'role' => 'cashier', 'is_admin' => false],
+            ['name' => 'Dapur Demo', 'email' => 'dapur@gmail.test', 'password' => 'cahya15', 'role' => 'kitchen', 'is_admin' => false],
+        ] as $user) {
+            User::updateOrCreate(['email' => $user['email']], $user);
+        }
     }
 }

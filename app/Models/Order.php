@@ -14,6 +14,8 @@ class Order extends Model
      */
     protected $fillable = [
         'order_number',
+        'queue_number',
+        'order_note',
         'customer_name',
         'user_id',
         'total',
@@ -22,17 +24,30 @@ class Order extends Model
         'payment_method',
         'order_type',
         'status',
+        'payment_status',
         'barcode_reference',
+        'cancelled_at',
+        'cancellation_reason',
+        'refund_amount',
+        'refunded_at',
+        'refund_reason',
     ];
 
     /**
      * Mengatur angka uang agar selalu dibaca sebagai nilai desimal.
      */
-    protected $casts = [
-        'total' => 'decimal:2',
-        'paid_amount' => 'decimal:2',
-        'change_amount' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'total' => 'decimal:2',
+            'queue_number' => 'integer',
+            'paid_amount' => 'decimal:2',
+            'change_amount' => 'decimal:2',
+            'refund_amount' => 'decimal:2',
+            'cancelled_at' => 'datetime',
+            'refunded_at' => 'datetime',
+        ];
+    }
 
     /**
      * Satu pesanan punya banyak item/menu yang dibeli.
@@ -40,6 +55,11 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function statusHistories()
+    {
+        return $this->hasMany(OrderStatusHistory::class);
     }
 
     /**

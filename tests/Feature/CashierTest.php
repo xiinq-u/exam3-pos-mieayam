@@ -3,109 +3,89 @@
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 test('cashier can view products', function () {
-    $user = User::factory()->create();
+    $cashier = User::factory()->create(['role' => 'cashier', 'is_admin' => false]);
+    Product::factory()->count(2)->create(['is_available' => true]);
 
-    $response = $this->actingAs($user)->get(route('cashier.index'));
-
-    $response->assertStatus(200);
-    $response->assertViewIs('cashier.index');
+    $this->actingAs($cashier, 'sanctum')->getJson('/api/cashier/products')
+        ->assertOk()
+        ->assertJsonCount(2);
 })->group('cashier');
 
 test('cashier can add product to cart', function () {
-    $user = User::factory()->create();
+    $cashier = User::factory()->create(['role' => 'cashier', 'is_admin' => false]);
     $product = Product::factory()->create();
 
-    $response = $this->actingAs($user)->post(route('cashier.add'), [
+    $this->actingAs($cashier, 'sanctum')->postJson('/api/cashier/add', [
         'product_id' => $product->id,
         'quantity' => 2,
-    ]);
+    ])->assertOk()
+        ->assertJsonPath('items.0.product_id', $product->id)
+        ->assertJsonPath('items.0.quantity', 2);
 
-    $response->assertRedirect(route('cashier.index'));
-    $this->assertNotEmpty(session('cart'));
-    $this->assertEquals(2, session('cart')[0]['quantity']);
+    expect(session('cart')[(string) $product->id]['quantity'])->toBe(2);
 })->group('cashier');
 
-test('cashier can checkout and create pending order', function () {
-    $user = User::factory()->create();
+test('cashier can checkout and create an unpaid pending order', function () {
+    $cashier = User::factory()->create(['role' => 'cashier', 'is_admin' => false]);
     $product = Product::factory()->create(['price' => 50000]);
 
-    // Add to cart
-    $this->actingAs($user)->post(route('cashier.add'), [
-        'product_id' => $product->id,
-        'quantity' => 1,
-    ]);
-
-    // Checkout
-    $response = $this->post(route('cashier.checkout'), [
+    $response = $this->actingAs($cashier, 'sanctum')->postJson('/api/cashier/checkout', [
         'customer_name' => 'Budi',
         'order_type' => 'dine_in',
+        'items' => [['product_id' => $product->id, 'quantity' => 1]],
     ]);
 
-    // Verify order created with pending status
-    $order = Order::latest()->first();
-    $response->assertRedirect(route('orders.show', $order));
-
-    $this->assertEquals('Budi', $order->customer_name);
-    $this->assertEquals('pending', $order->status);
-    $this->assertEquals(50000, $order->total);
-    $this->assertNull($order->paid_amount);
+    $response->assertCreated()
+        ->assertJsonPath('order.customer_name', 'Budi')
+        ->assertJsonPath('order.status', 'pending')
+        ->assertJsonPath('order.payment_status', 'unpaid')
+        ->assertJsonPath('order.total', '50000.00');
 })->group('cashier');
 
-test('cashier can view pending orders', function () {
-    $user = User::factory()->create();
+test('cashier can view unpaid orders', function () {
+    $cashier = User::factory()->create(['role' => 'cashier', 'is_admin' => false]);
+    Order::factory()->create(['user_id' => $cashier->id, 'status' => 'pending', 'payment_status' => 'unpaid']);
+    Order::factory()->create(['user_id' => $cashier->id, 'status' => 'completed', 'payment_status' => 'paid']);
 
-    Order::factory()->create([
-        'user_id' => $user->id,
-        'status' => 'pending',
-        'total' => 100000,
-    ]);
-
-    $response = $this->actingAs($user)->get(route('orders.pending'));
-
-    $response->assertStatus(200);
-    $response->assertViewIs('orders.pending');
+    $this->actingAs($cashier, 'sanctum')->getJson('/api/cashier/orders/pending')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.payment_status', 'unpaid');
 })->group('cashier');
 
-test('cashier can complete order with payment', function () {
-    $user = User::factory()->create();
-
+test('cashier payment does not change kitchen order status', function () {
+    $cashier = User::factory()->create(['role' => 'cashier', 'is_admin' => false]);
     $order = Order::factory()->create([
-        'user_id' => $user->id,
+        'user_id' => $cashier->id,
         'status' => 'pending',
+        'payment_status' => 'unpaid',
         'total' => 50000,
     ]);
 
-    $response = $this->actingAs($user)->post(route('orders.complete', $order), [
+    $this->actingAs($cashier, 'sanctum')->postJson("/api/orders/{$order->id}/pay", [
         'payment_method' => 'cash',
         'paid_amount' => 50000,
-    ]);
+    ])->assertOk()->assertJsonPath('data.payment_status', 'paid');
 
-    $response->assertRedirect(route('orders.pending'));
-
-    // Verify order marked as completed
-    $order->refresh();
-    $this->assertEquals('completed', $order->status);
-    $this->assertEquals(50000, $order->paid_amount);
-    $this->assertEquals(0, $order->change_amount);
+    expect($order->fresh()->status)->toBe('pending')
+        ->and($order->fresh()->paid_amount)->toBe('50000.00')
+        ->and($order->fresh()->change_amount)->toBe('0.00');
 })->group('cashier');
 
-test('payment change calculated correctly', function () {
-    $user = User::factory()->create();
+test('payment change is calculated correctly', function () {
+    $cashier = User::factory()->create(['role' => 'cashier', 'is_admin' => false]);
+    $order = Order::factory()->create(['user_id' => $cashier->id, 'payment_status' => 'unpaid', 'total' => 50000]);
 
-    $order = Order::factory()->create([
-        'user_id' => $user->id,
-        'status' => 'pending',
-        'total' => 50000,
-    ]);
-
-    $this->actingAs($user)->post(route('orders.complete', $order), [
+    $this->actingAs($cashier, 'sanctum')->postJson("/api/orders/{$order->id}/pay", [
         'payment_method' => 'cash',
         'paid_amount' => 60000,
-    ]);
+    ])->assertOk();
 
-    $order->refresh();
-    $this->assertEquals(60000, $order->paid_amount);
-    $this->assertEquals(10000, $order->change_amount);
+    expect($order->fresh()->paid_amount)->toBe('60000.00')
+        ->and($order->fresh()->change_amount)->toBe('10000.00');
 })->group('cashier');

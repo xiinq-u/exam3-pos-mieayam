@@ -17,9 +17,19 @@ class OrderItem extends Model
         'product_id',
         'product_name',
         'price',
+        'cost_price',
         'quantity',
         'subtotal',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+        ];
+    }
 
     /**
      * Satu item pembelian milik satu pesanan.
