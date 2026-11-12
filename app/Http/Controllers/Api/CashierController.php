@@ -88,7 +88,6 @@ class CashierController extends Controller
         $items = collect($cart)->map(function ($item, $productId = null) {
             $productId = $item['product_id'] ?? $productId;
             $product = Product::find($productId);
-
             if (! $product) {
                 return null;
             }
