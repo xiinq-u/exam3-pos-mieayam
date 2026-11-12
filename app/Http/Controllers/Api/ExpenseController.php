@@ -32,9 +32,11 @@ class ExpenseController extends Controller
             'category' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'gt:0'],
+            'payment_method' => ['sometimes', 'in:cash,qris,transfer'],
             'expense_date' => ['required', 'date'],
         ]);
 
+        $data['payment_method'] ??= 'cash';
         $expense = Expense::create([...$data, 'user_id' => $request->user()->id]);
         AuditLogger::record($request->user(), 'expense.created', $expense, ['amount' => $expense->amount]);
 

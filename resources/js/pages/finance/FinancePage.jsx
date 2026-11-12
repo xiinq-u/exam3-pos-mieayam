@@ -31,12 +31,14 @@ function FinancePage() {
         category: "",
         description: "",
         amount: "",
+        payment_method: "cash",
         expense_date: today,
     });
     const [income, setIncome] = useState({
         category: "",
         description: "",
         amount: "",
+        payment_method: "cash",
         income_date: today,
     });
     const [openingCash, setOpeningCash] = useState("0");
@@ -131,6 +133,7 @@ function FinancePage() {
                 category: "",
                 description: "",
                 amount: "",
+                payment_method: "cash",
                 expense_date: today,
             });
             removePageCacheByPrefix("expenses_");
@@ -158,6 +161,7 @@ function FinancePage() {
                 category: "",
                 description: "",
                 amount: "",
+                payment_method: "cash",
                 income_date: today,
             });
             removePageCacheByPrefix("incomes_");
@@ -306,13 +310,10 @@ function FinancePage() {
                         {error}
                     </p>
                 ) : null}
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <StatCard
-                        label="Penjualan Bersih"
-                        value={formatCurrency(
-                            (profitLoss?.sales || 0) -
-                                (profitLoss?.refunds || 0),
-                        )}
+                        label="Omzet Penjualan"
+                        value={formatCurrency(profitLoss?.sales)}
                     />
                     <StatCard
                         label="Pemasukan Lain"
@@ -322,6 +323,8 @@ function FinancePage() {
                         label="Refund"
                         value={formatCurrency(profitLoss?.refunds)}
                     />
+                    <StatCard label="HPP Bahan Terjual" value={formatCurrency(profitLoss?.cost_of_goods_sold)} />
+                    <StatCard label="Laba Kotor" value={formatCurrency(profitLoss?.gross_profit)} />
                     <StatCard
                         label="Pengeluaran"
                         value={formatCurrency(profitLoss?.expenses)}
@@ -359,7 +362,7 @@ function FinancePage() {
                         Export Excel
                     </button>
                     <span className="self-center text-sm text-slate-500">
-                        Filter laba-rugi dan pengeluaran
+                        Filter seluruh ringkasan dan riwayat keuangan
                     </span>
                 </div>
                 <ProfitLoss report={profitLoss} />
@@ -457,6 +460,7 @@ function FinancePage() {
                             }
                             className="w-full rounded-xl border p-2"
                         />
+                        <PaymentMethodSelect value={expense.payment_method} onChange={(payment_method) => setExpense({ ...expense, payment_method })} />
                         <button className="rounded-xl bg-rose-600 px-4 py-2 font-medium text-white">
                             Simpan
                         </button>
@@ -531,6 +535,7 @@ function FinancePage() {
                             }
                             className="w-full rounded-xl border p-2"
                         />
+                        <PaymentMethodSelect value={income.payment_method} onChange={(payment_method) => setIncome({ ...income, payment_method })} />
                         <button className="rounded-xl bg-emerald-600 px-4 py-2 font-medium text-white">
                             Simpan
                         </button>
@@ -604,12 +609,20 @@ function FinancePage() {
                 </div>
                 <div className="rounded-2xl bg-white p-6 shadow">
                     <h2 className="mb-3 text-lg font-bold">
-                        Riwayat Pengeluaran
+                        Riwayat Pemasukan dan Pengeluaran
                     </h2>
+                    <h3 className="mt-3 font-semibold">Pemasukan lain</h3>
+                    {incomes.map((item) => (
+                        <p key={`income-${item.id}`} className="border-b py-2 text-sm">
+                            {item.income_date} · {item.category}: {item.description} · {formatCurrency(item.amount)} · {item.user?.name || "-"} · {item.payment_method || "cash"} {item.cancelled_at ? "(dibatalkan)" : ""}
+                        </p>
+                    ))}
+                    <h3 className="mt-4 font-semibold">Pengeluaran</h3>
                     {expenses.map((item) => (
                         <p key={item.id} className="border-b py-2 text-sm">
                             {item.category}: {item.description} —{" "}
                             {formatCurrency(item.amount)}{" "}
+                            · {item.expense_date} · {item.user?.name || "-"} · {item.payment_method || "cash"}{" "}
                             {item.cancelled_at ? "(dibatalkan)" : ""}
                         </p>
                     ))}
@@ -633,6 +646,16 @@ function FinanceSkeleton() {
                 </div>
             </div>
         </main>
+    );
+}
+
+function PaymentMethodSelect({ value, onChange }) {
+    return (
+        <select required value={value} onChange={(event) => onChange(event.target.value)} className="w-full rounded-xl border p-2">
+            <option value="cash">Tunai</option>
+            <option value="qris">QRIS</option>
+            <option value="transfer">Transfer</option>
+        </select>
     );
 }
 

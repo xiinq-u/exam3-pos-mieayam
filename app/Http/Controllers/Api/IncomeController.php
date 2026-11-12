@@ -13,12 +13,13 @@ class IncomeController extends Controller
     {
         $data = $request->validate(['start_date' => ['nullable', 'date'], 'end_date' => ['nullable', 'date', 'after_or_equal:start_date']]);
 
-        return response()->json(['data' => Income::with('user:id,name')->when($data['start_date'] ?? null, fn ($query, $date) => $query->whereDate('income_date', '>=', $date))->when($data['end_date'] ?? null, fn ($query, $date) => $query->whereDate('income_date', '<=', $date))->latest('income_date')->get()]);
+        return response()->json(['data' => Income::with('user:id,name')->when($data['start_date'] ?? null, fn ($query, $date) => $query->whereDate('income_date', '>=', $date))->when($data['end_date'] ?? null, fn ($query, $date) => $query->whereDate('income_date', '<=', $date))->latest('income_date')->latest('id')->get()]);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate(['category' => ['required', 'string', 'max:100'], 'description' => ['required', 'string', 'max:255'], 'amount' => ['required', 'numeric', 'gt:0'], 'income_date' => ['required', 'date']]);
+        $data = $request->validate(['category' => ['required', 'string', 'max:100'], 'description' => ['required', 'string', 'max:255'], 'amount' => ['required', 'numeric', 'gt:0'], 'payment_method' => ['sometimes', 'in:cash,qris,transfer'], 'income_date' => ['required', 'date']]);
+        $data['payment_method'] ??= 'cash';
         $income = Income::create([...$data, 'user_id' => $request->user()->id]);
         AuditLogger::record($request->user(), 'income.created', $income, ['amount' => $income->amount]);
 

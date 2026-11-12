@@ -15,10 +15,12 @@ test('owner can record and cancel an expense without deleting its history', func
         'category' => 'Operasional',
         'description' => 'Beli gas',
         'amount' => 25000,
+        'payment_method' => 'qris',
         'expense_date' => now()->toDateString(),
     ])->assertCreated()->json('data');
 
     $this->assertDatabaseHas('audit_logs', ['action' => 'expense.created', 'auditable_id' => $expense['id']]);
+    expect($expense['payment_method'])->toBe('qris');
 
     $this->actingAs($owner, 'sanctum')->postJson("/api/expenses/{$expense['id']}/cancel", [
         'reason' => 'Input ganda',

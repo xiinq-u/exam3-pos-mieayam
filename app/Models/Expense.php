@@ -14,6 +14,7 @@ class Expense extends Model
         'category',
         'description',
         'amount',
+        'payment_method',
         'expense_date',
         'cancelled_at',
         'cancellation_reason',

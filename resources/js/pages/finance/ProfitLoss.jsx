@@ -17,13 +17,13 @@ function ProfitLoss({ report }) {
     const rows = [
         { label: "Penjualan", value: report.sales },
         { label: "Refund", value: report.refunds, deduction: true },
-        { label: "Pemasukan lain", value: report.other_income },
         {
             label: "Harga pokok penjualan",
             value: report.cost_of_goods_sold,
             deduction: true,
         },
         { label: "Laba kotor", value: report.gross_profit, total: true },
+        { label: "Pemasukan lain", value: report.other_income },
         { label: "Pengeluaran", value: report.expenses, deduction: true },
         { label: "Laba bersih", value: report.net_profit, total: true },
     ];
@@ -38,7 +38,7 @@ function ProfitLoss({ report }) {
                     Laporan Laba-Rugi
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                    Periode {report.start_date} sampai {report.end_date}
+                    Periode {report.start_date} sampai {report.end_date}. Laba kotor = penjualan bersih − HPP; laba bersih = laba kotor + pemasukan lain − pengeluaran.
                 </p>
             </div>
 

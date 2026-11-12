@@ -201,7 +201,7 @@ class ReportController extends Controller
             ->whereDate('orders.created_at', '<=', $data['end_date'])
             ->sum(DB::raw('order_items.quantity * order_items.cost_price'));
         $netSales = (float) $sales - (float) $refunds;
-        $grossProfit = $netSales + (float) $otherIncome - (float) $costOfGoodsSold;
+        $grossProfit = $netSales - (float) $costOfGoodsSold;
 
         return [
             'start_date' => $data['start_date'],
@@ -212,7 +212,7 @@ class ReportController extends Controller
             'expenses' => (float) $expenses,
             'cost_of_goods_sold' => (float) $costOfGoodsSold,
             'gross_profit' => $grossProfit,
-            'net_profit' => $grossProfit - (float) $expenses,
+            'net_profit' => $grossProfit + (float) $otherIncome - (float) $expenses,
         ];
     }
 }
