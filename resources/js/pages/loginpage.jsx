@@ -237,6 +237,12 @@ function LoginPage() {
                                     Ingat akun saya di komputer meja ini
                                 </label>
 
+                                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+                                    <p className="font-bold">Akun kasir demo</p>
+                                    <p className="mt-1">Email: <span className="font-mono font-semibold">kasir@gmail.test</span></p>
+                                    <p>Password: <span className="font-mono font-semibold">cahya14</span></p>
+                                </div>
+
                                 <div className="pt-2">
                                     <button
                                         type="submit"

@@ -7,7 +7,7 @@ import AccountPage from "./pages/AccountPage";
 import AuditLogPage from "./pages/AuditLogPage";
 import CashierDashboardPage from "./pages/cashier/CashierDashboardPage";
 import CashierTransactionPage from "./pages/cashier/CashierTransactionPage";
-import FinancePage from "./pages/finance/FinancePage";
+import OwnerIncomePage from "./pages/owner/OwnerIncomePage";
 import KitchenDashboardPage from "./pages/kitchen/KitchenDashboardPage";
 import KitchenOrdersPage from "./pages/kitchen/KitchenOrdersPage";
 import LoginPage from "./pages/loginpage";
@@ -44,7 +44,7 @@ export default function App() {
                         <Route path="/products/:productId" element={<RequireRole roles={["owner"]}><ProductShow /></RequireRole>} />
                         <Route path="/users" element={<RequireRole roles={["owner"]}><UserManagementPage /></RequireRole>} />
                         <Route path="/reports" element={<RequireRole roles={["owner"]}><ReportPage /></RequireRole>} />
-                        <Route path="/finance" element={<RequireRole roles={["owner"]}><FinancePage /></RequireRole>} />
+                        <Route path="/finance" element={<RequireRole roles={["owner"]}><OwnerIncomePage /></RequireRole>} />
                         <Route path="/orders" element={<RequireRole roles={["cashier"]}><PendingOrders /></RequireRole>} />
                         <Route path="/orders/manage" element={<RequireRole roles={["owner"]}><OrderManagementPage /></RequireRole>} />
                         <Route path="/orders/:orderId" element={<RequireRole roles={["cashier"]}><OrderDetails /></RequireRole>} />
